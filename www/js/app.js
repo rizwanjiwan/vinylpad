@@ -1,52 +1,71 @@
-log('Setup event listener registered')
-let music;//MusicKit Instance
-let devToken;//dev token;
-document.addEventListener('musickitloaded',  async () =>{
-    // Call configure() to configure an instance of MusicKit on the Web.
-    try {
-        //get token
-        log('Trying to grab token');
-        await fetch('token.json')
-            .then(res => {
-                return res.text()
-            })
-            .then(token=>{
-                log('Token grabbed: '+token);
-                devToken = token;
-        });
+const vinylPadApp = Vue.createApp({
+    data() {
+        let returnObj = {
+            debug:true,
+            devToken:null,
+            music:null,
+        };
+        //load music kit
+        document.addEventListener('musickitloaded',  async () =>{
+            try {
+                //get token
+                await fetch('token.json')
+                    .then(res => {
+                        return res.text()
+                    })
+                    .then(token=>{
+                        this.devToken = token;
+                    });
+                await MusicKit.configure({
+                    developerToken: this.devToken,
+                    app: {
+                        name: 'vinylPad',
+                        build: '0.1',
+                    },
+                });
 
-        log('Trying to setup MusicKit');
-        await MusicKit.configure({
-            developerToken: devToken,
-            app: {
-                name: 'vinylPad',
-                build: '0.1',
-            },
+            } catch (err) {
+                console.error(err);
+            }
+            // MusicKit instance is available
+            this.music = MusicKit.getInstance();
+            await this.music.authorize();
+           /* const result = await this.music.api.music(
+                `/v1/catalog/us/search`,
+                { term: 'rumors', types: 'albums'}
+            );
+            log(result.data.results.albums.data);
+            result.data.results.albums.data.forEach(obj=>{log(obj)});
+            */
+            const queue = await this.music.setQueue({ album: '594061854'});
         });
+        return returnObj;
+    },
+    methods: {
+        log(message){
+            if(this.debug){
+                console.log(message);
+            }
+        },
+        play(){
+          this.music.play();
+        },
+        pause(){
+            this.music.pause();
+        },
+        previousTrack(){
+            this.music.skipToPreviousItem();
+        },
+        nextTrack(){
+            this.music.skipToNextItem();
+        },
+    },
+    computed: {
 
-    } catch (err) {
-        console.error(err);
-    }
-    // MusicKit instance is available
-    log('MusicKit instance and auth');
-    music = MusicKit.getInstance();
-    await music.authorize();
-    log('Authorized.');
-    log('test play fleetwood mac');
-    const result = await music.api.music(
-        `/v1/catalog/us/search`,
-        { term: 'rumors', types: 'albums'}
-    );
-    log(result.data.results.albums.data);
-    result.data.results.albums.data.forEach(obj=>{log(obj)});
-    const queue = await music.setQueue({ album: '594061854'});
+
+    },//end computed
 
 });
+vinylPadApp.config.compilerOptions.isCustomElement= (tag) => ['apple-music-progress','apple-music-volume',].includes(tag);
+const vinylPadAppMount = vinylPadApp.mount('#vinyl-pad');
 
-
-
-
-//to toggle if we're debuging stuff
-function log(message){
-    console.log(message);
-}
