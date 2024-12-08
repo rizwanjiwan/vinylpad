@@ -1,0 +1,6 @@
+.idea/*
+**/.DS_Store
+/vendor
+www/token.json
+/config.json
+private.key

@@ -1,0 +1,25 @@
+{
+  "require":
+  {
+    "ext-json": "*",
+    "lcobucci/jwt": "^5.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "unscalable\\vinylpad\\": "src/unscalable/vinylpad"
+    }
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url":  "git@github.com:rizwanjiwan/commonpub.git"
+    }
+  ],
+  "config": {
+    "platform": {
+      "php": "8.3"
+    }
+  },
+  "name": "rizwanjiwan/vinylpad",
+  "description": ""
+}
