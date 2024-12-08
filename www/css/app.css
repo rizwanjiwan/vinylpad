@@ -1,0 +1,48 @@
+.play-controls{
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    color: #000000;
+    background: #f0f0f0;
+}
+
+.progress-bar{
+
+}
+.felt-background{
+    background-repeat: repeat;
+    background-image: url("../img/felt.jpg");
+}
+.record-area{
+    align-content: center;
+}
+.vinyl-area{
+    position: relative;
+}
+.album-cover {
+    float: left;
+    position: absolute;
+    left: 181px;
+    top: 194px;
+    width: 150px;
+    z-index: 900;
+    border-radius: 50%;
+}
+.center-dot {
+    float: left;
+    position: absolute;
+    left: 249px;
+    top: 260px;
+    width: 15px;
+    z-index: 901;
+    border-radius: 50%;
+}
+.rotating{
+    animation: animate 20s infinite linear
+}
+@keyframes animate {
+    to {
+        transform: rotate(calc(3*360deg));
+    }
+}
