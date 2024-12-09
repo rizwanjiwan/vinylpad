@@ -27,7 +27,20 @@ const vinylPadApp = Vue.createApp({
         };
         console.log('Waiting for music Kit load.');
         //load music kit
-        document.addEventListener('musickitloaded',  async () =>{
+        if(MusicKit ===undefined){
+            document.addEventListener('musickitloaded',  async () =>{
+                await this.setupMusicKit();
+            });
+        }
+        else{
+            //already loaded
+            setTimeout(()=>{this.setupMusicKit()},SEARCH_TIMER_DELAY)
+        }
+        console.log('booted up');
+        return returnObj;
+    },
+    methods: {
+        async setupMusicKit(){
             try {
                 //get token
                 console.log('Loading dev token');
@@ -64,11 +77,7 @@ const vinylPadApp = Vue.createApp({
                 console.log('Is NOT Authorized');
                 this.state=STATE_NEED_AUTH;
             }
-        });
-        console.log('booted up');
-        return returnObj;
-    },
-    methods: {
+        },
         log(message){
             if(this.debug){
                 console.log(message);
