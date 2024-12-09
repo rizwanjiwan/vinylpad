@@ -14,7 +14,7 @@ const SEARCH_TIMER_DELAY=250
 const vinylPadApp = Vue.createApp({
     data() {
         let returnObj = {
-            debug:true,         //true to output whatever from log() function to console.
+            debug:false,         //true to output whatever from log() function to console.
             devToken:null,      //our dev token
             music:null,         //the MusicInstance
             searchQuery:"",     //what the user is typing
@@ -29,6 +29,7 @@ const vinylPadApp = Vue.createApp({
         document.addEventListener('musickitloaded',  async () =>{
             try {
                 //get token
+                console.log('Loading dev token');
                 await fetch('token.json')
                     .then(res => {
                         return res.text()
@@ -36,11 +37,12 @@ const vinylPadApp = Vue.createApp({
                     .then(token=>{
                         this.devToken = token;
                     });
+                console.log('Configure MusicKit');
                 await MusicKit.configure({
                     developerToken: this.devToken,
                     app: {
                         name: 'vinylPad',
-                        build: '0.1',
+                        build: '0.2',
                     },
                 });
 
@@ -48,16 +50,21 @@ const vinylPadApp = Vue.createApp({
                 console.error(err);
             }
             // MusicKit instance is available
+            console.log('Getting instance');
             this.music = MusicKit.getInstance();
+            console.log('Checking if Authorized');
             if(this.music.isAuthorized===true){
+                console.log('Is Authorized');
                 //skip authorization and go straight to loading an album
                 this.state=STATE_LOAD_ALBUM;
             }
             else{
                 //need to auth
+                console.log('Is NOT Authorized');
                 this.state=STATE_NEED_AUTH;
             }
         });
+        console.log('booted up');
         return returnObj;
     },
     methods: {
