@@ -6,7 +6,22 @@
     color: #000000;
     background: #f0f0f0;
 }
-
+.authorize-button{
+    width:300px;
+    cursor:pointer;
+}
+.search-album-art{
+    max-width:100px;
+}
+.search-album-name{
+    color:white;
+}
+.search-artist-name{
+    color:white;
+}
+.play-controls{
+    z-index: 1000;
+}
 .progress-bar{
 
 }

@@ -14,44 +14,101 @@
     </head>
     <body class="felt-background">
     <div class="container" id="vinyl-pad">
-        <div class="record-area h-100 d-flex align-items-center justify-content-center">
-             <div class="vinyl-area">
-                 <img src="img/record.png" alt="record">
-                 <img src="img/tmp-rumors.png" alt="albumcover" class="album-cover rotating d-flex align-items-center justify-content-center">
-                 <img src="img/dot.png" alt="dot" class="center-dot d-flex align-items-center justify-content-center">
-                 <!--<apple-music-artwork class="album-cover rotating d-flex align-items-center justify-content-center"></apple-music-artwork>-->
-             </div>
-        </div>
-        <div id="toolbar" class="play-controls pt-3">
-            <div class="row mx-2">
-                <div class="col-10 ">
-                    <apple-music-progress class="progress-bar"></apple-music-progress>
-                </div>
-                <div class="col-2">
-                    Switch
+        <div v-show="showAuthScreen">
+            <h1 class="text-light">Welcome to VinylPad</h1>
+            <p class="text-light">You need to be logged in to use this music player</p>
+            <img src="img/authorize.png" class="authorize-button" alt="authorize button" v-on:click="authorize()"/>
+            <p class="text-light mt-2">Note: A pop-up window is used to authorize. Be sure to allow pop-ups from this site.</p>
+        </div><!--end auth screen-->
+        <div v-show="showLoadingScreen">
+            <h1 class="text-light">Loading...</h1>
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border text-light" role="status">
+                    <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
-            <div class="row mx-2 pb-2">
-                <div class="col-2">
-                    <button v-on:click="previousTrack">Back</button>
-                </div>
-                <div class="col-2">
-                    <button v-on:click="play">Play</button>
-                </div>
-                <div class="col-2">
-                    <button v-on:click="pause">Pause</button>
-                </div>
-                <div class="col-2">
-                    <button v-on:click="nextTrack">Next</button>
-                </div>
-                <div class="col-2">
-                </div>
-                <div class="col-2">
-                    <apple-music-volume></apple-music-volume>
-                </div>
-            </div>
+        </div><!--end loading screen-->
 
-        </div>
+        <div v-show="showPlayingScreen || showLoadAlbumScreen">
+            <div v-show="showLoadAlbumScreen">
+                <h1 class="text-light">Select an album</h1>
+                <div class="row">
+                    <div class="col-2"></div>
+                    <div class="col-8">
+                        <input class="form-control form-control-lg"
+                               type="text"
+                               placeholder="Search for an album"
+                                v-model="searchQuery"
+                                v-on:keyup="searchForAlbum">
+                    </div>
+                    <div class="col-2"></div>
+                </div><!--end search field row-->
+                <!--start spinner for loading search results-->
+                <div class="d-flex justify-content-center" v-show="loadingSearchResults"><!--spinner for search results loading-->
+                    <div class="spinner-border text-light" role="status" v-show="loadingSearchResults">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div><!--end spinner-->
+                <div class="row mt-3" v-for="(album,index) in searchResults" v-on:click="loadAlbum(index)">
+                    <div class="col-2"></div>
+                    <div class="col">
+                        <div class="row">
+                            <div class="col-4">
+                                <img v-bind:src="parseAlbumArtUrl(album)" class="search-album-art" alt="album art" />
+                            </div>
+                            <div class="col">
+                                <div class="row">
+                                    <div class="col search-album-name">{{parseAlbumName(album)}}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col search-artist-name">{{parseArtistName(album)}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2"></div>
+                </div>
+            </div><!--end load album screen-->
+            <div class="record-area h-100 d-flex align-items-center justify-content-center" v-show="showPlayingScreen">
+                <div class="vinyl-area" v-show="showPlayingScreen">
+                    <img src="img/record.png" alt="record">
+                    <img v-bind:src="parseAlbumArtUrl(loadedAlbumDetails)" alt="albumcover" class="album-cover rotating d-flex align-items-center justify-content-center">
+                    <img src="img/dot.png" alt="dot" class="center-dot d-flex align-items-center justify-content-center">
+                    <!--<apple-music-artwork class="album-cover rotating d-flex align-items-center justify-content-center"></apple-music-artwork>-->
+                </div>
+            </div><!--end rotating vinyl-->
+
+            <div id="toolbar" class="play-controls pt-3" v-show="showPlayingScreen">
+                <div class="row mx-2">
+                    <div class="col-10 ">
+                        <apple-music-progress class="progress-bar"></apple-music-progress>
+                    </div>
+                    <div class="col-2">
+                        Switch
+                    </div>
+                </div>
+                <div class="row mx-2 pb-2">
+                    <div class="col-2">
+                    </div>
+                    <div class="col-2">
+                        <button v-on:click="previousTrack">Back</button>
+                    </div>
+                    <div class="col-2">
+                        <button v-on:click="play" v-show="isPlaying">Play</button>
+                        <button v-on:click="pause" v-show="isPlaying===false">Pause</button>
+                    </div>
+                    <div class="col-2">
+                        <button v-on:click="nextTrack">Next</button>
+                    </div>
+                    <div class="col-2">
+                    </div>
+                    <div class="col-2">
+                        <apple-music-volume></apple-music-volume>
+                    </div>
+                </div>
+
+            </div>
+        </div><!--end play screen-->
     </div>
 
     </body>
