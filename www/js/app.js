@@ -14,7 +14,7 @@ const SEARCH_TIMER_DELAY=250
 const vinylPadApp = Vue.createApp({
     data() {
         let returnObj = {
-            debug:false,         //true to output whatever from log() function to console.
+            debug:true,         //true to output whatever from log() function to console.
             devToken:null,      //our dev token
             music:null,         //the MusicInstance
             searchQuery:"",     //what the user is typing
@@ -25,6 +25,7 @@ const vinylPadApp = Vue.createApp({
             playState: PLAY_STATE_PAUSED,    //the play-pause state. See computes
             loadedAlbumDetails:null,    //the currently playing album details from search results (e.g. artist, name, album art)
         };
+        console.log('Waiting for music Kit load.');
         //load music kit
         document.addEventListener('musickitloaded',  async () =>{
             try {
