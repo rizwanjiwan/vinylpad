@@ -167,6 +167,7 @@ const vinylPadApp = Vue.createApp({
         parseAlbumArtUrl(resultRow){
             this.log('parseAlbumArtUrl called');
             if(resultRow===null){
+                this.log('default return');
                 return "img/tmp-rumors.png";
             }
             let rawUrl=resultRow.attributes.artwork.url;
