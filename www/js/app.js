@@ -14,7 +14,7 @@ const SEARCH_TIMER_DELAY=250
 const vinylPadApp = Vue.createApp({
     data() {
         let returnObj = {
-            debug:true,         //true to output whatever from log() function to console.
+            debug:false,         //true to output whatever from log() function to console.
             devToken:null,      //our dev token
             music:null,         //the MusicInstance
             searchQuery:"",     //what the user is typing
@@ -25,7 +25,7 @@ const vinylPadApp = Vue.createApp({
             playState: PLAY_STATE_PAUSED,    //the play-pause state. See computes
             loadedAlbumDetails:null,    //the currently playing album details from search results (e.g. artist, name, album art)
         };
-        console.log('Waiting for music Kit load.');
+        //console.log('Waiting for music Kit load.');
         //load music kit
         if(MusicKit ===undefined){
             document.addEventListener('musickitloaded',  async () =>{
@@ -36,14 +36,14 @@ const vinylPadApp = Vue.createApp({
             //already loaded
             setTimeout(()=>{this.setupMusicKit()},SEARCH_TIMER_DELAY)
         }
-        console.log('booted up');
+        //console.log('booted up');
         return returnObj;
     },
     methods: {
         async setupMusicKit(){
             try {
                 //get token
-                console.log('Loading dev token');
+                //console.log('Loading dev token');
                 await fetch('token.json')
                     .then(res => {
                         return res.text()
@@ -51,7 +51,7 @@ const vinylPadApp = Vue.createApp({
                     .then(token=>{
                         this.devToken = token;
                     });
-                console.log('Configure MusicKit');
+                //console.log('Configure MusicKit');
                 await MusicKit.configure({
                     developerToken: this.devToken,
                     app: {
@@ -64,17 +64,17 @@ const vinylPadApp = Vue.createApp({
                 console.error(err);
             }
             // MusicKit instance is available
-            console.log('Getting instance');
+            //console.log('Getting instance');
             this.music = MusicKit.getInstance();
-            console.log('Checking if Authorized');
+            //console.log('Checking if Authorized');
             if(this.music.isAuthorized===true){
-                console.log('Is Authorized');
+                //console.log('Is Authorized');
                 //skip authorization and go straight to loading an album
                 this.state=STATE_LOAD_ALBUM;
             }
             else{
                 //need to auth
-                console.log('Is NOT Authorized');
+                //console.log('Is NOT Authorized');
                 this.state=STATE_NEED_AUTH;
             }
         },
