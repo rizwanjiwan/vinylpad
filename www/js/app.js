@@ -170,6 +170,8 @@ const vinylPadApp = Vue.createApp({
                 this.log('default return');
                 return "img/tmp-rumors.png";
             }
+            this.log('Non default');
+            this.log(resultRow);
             let rawUrl=resultRow.attributes.artwork.url;
             rawUrl=rawUrl.replace('{w}',150,);
             rawUrl = rawUrl.replace('{h}',150);
