@@ -6,9 +6,11 @@
     color: #000000;
     background: #f0f0f0;
 }
+.clickable{
+    cursor:pointer;
+}
 .authorize-button{
     width:300px;
-    cursor:pointer;
 }
 .search-album-art{
     max-width:100px;
@@ -21,6 +23,10 @@
 }
 .play-controls{
     z-index: 1000;
+}
+.control-button{
+    max-height:25px;
+    max-width:25px;
 }
 .progress-bar{
 
@@ -55,6 +61,9 @@
 }
 .rotating{
     animation: animate 20s infinite linear
+}
+.pause-rotation{
+    animation-play-state: paused;
 }
 @keyframes animate {
     to {

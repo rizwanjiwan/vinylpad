@@ -17,7 +17,7 @@
         <div v-show="showAuthScreen">
             <h1 class="text-light">Welcome to VinylPad</h1>
             <p class="text-light">You need to be logged in to use this music player</p>
-            <img src="img/authorize.png" class="authorize-button" alt="authorize button" v-on:click="authorize()"/>
+            <img src="img/authorize.png" class="authorize-button clickable" alt="authorize button" v-on:click="authorize()"/>
             <p class="text-light mt-2">Note: A pop-up window is used to authorize. Be sure to allow pop-ups from this site.</p>
         </div><!--end auth screen-->
         <div v-show="showLoadingScreen">
@@ -72,7 +72,10 @@
             <div class="record-area h-100 d-flex align-items-center justify-content-center" v-show="showPlayingScreen">
                 <div class="vinyl-area" v-show="showPlayingScreen">
                     <img src="img/record.png" alt="record">
-                    <img v-bind:src="parseAlbumArtUrl(loadedAlbumDetails)" alt="albumcover" class="album-cover rotating d-flex align-items-center justify-content-center">
+                    <img v-bind:src="parseAlbumArtUrl(loadedAlbumDetails)"
+                         alt="albumcover"
+                         class="album-cover rotating d-flex align-items-center justify-content-center"
+                        v-bind:class="{ 'pause-rotation': !isPlaying }">
                     <img src="img/dot.png" alt="dot" class="center-dot d-flex align-items-center justify-content-center">
                     <!--<apple-music-artwork class="album-cover rotating d-flex align-items-center justify-content-center"></apple-music-artwork>-->
                 </div>
@@ -83,22 +86,55 @@
                     <div class="col-10 ">
                         <apple-music-progress class="progress-bar"></apple-music-progress>
                     </div>
-                    <div class="col-2">
-                        Switch
+                    <div class="col-2" v-on:click="showSearchForAlbum">
+                         <small class="clickable">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-vinyl-fill" viewBox="0 0 16 16">
+                                 <path d="M8 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4m0 3a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
+                                 <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4 8a4 4 0 1 0 8 0 4 4 0 0 0-8 0"/>
+                            </svg>
+                             Change album
+                         </small>
                     </div>
                 </div>
                 <div class="row mx-2 pb-2">
                     <div class="col-2">
                     </div>
-                    <div class="col-2">
-                        <button v-on:click="previousTrack">Back</button>
+                    <div class="col-2 ">
+                        <div class="text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 fill="currentColor"
+                                 v-on:click="previousTrack"
+                                 class="bi bi-skip-backward-btn-fill control-button clickable" viewBox="0 0 16 16">
+                                <path d="M0 12V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2m11.21-6.907L8.5 7.028V5.5a.5.5 0 0 0-.79-.407L5 7.028V5.5a.5.5 0 0 0-1 0v5a.5.5 0 0 0 1 0V8.972l2.71 1.935a.5.5 0 0 0 .79-.407V8.972l2.71 1.935A.5.5 0 0 0 12 10.5v-5a.5.5 0 0 0-.79-.407"/>
+                            </svg>
+                        </div>
                     </div>
-                    <div class="col-2">
-                        <button v-on:click="play" v-show="isPlaying">Play</button>
-                        <button v-on:click="pause" v-show="isPlaying===false">Pause</button>
+                    <div class="col-2" >
+                        <div class="text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                 v-on:click="play" v-show="isPlaying===false"
+                                 class="bi bi-play-btn-fill control-button clickable" viewBox="0 0 16 16">
+                                <path d="M0 12V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2m6.79-6.907A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814z"/>
+                            </svg>
+                        </div>
+                        <div class="text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 fill="currentColor"
+                                 v-on:click="pause" v-show="isPlaying"
+                                 class="bi bi-pause-btn-fill control-button clickable" viewBox="0 0 16 16">
+                                <path d="M0 12V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2m6.25-7C5.56 5 5 5.56 5 6.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C7.5 5.56 6.94 5 6.25 5m3.5 0c-.69 0-1.25.56-1.25 1.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C11 5.56 10.44 5 9.75 5"/>
+                            </svg>
+                        </div>
                     </div>
-                    <div class="col-2">
-                        <button v-on:click="nextTrack">Next</button>
+                    <div class="col-2 ">
+                        <div class="text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 fill="currentColor"
+                                 v-on:click="nextTrack"
+                                 class="bi bi-skip-forward-btn-fill control-button clickable" viewBox="0 0 16 16">
+                                <path d="M0 12V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2m4.79-6.907A.5.5 0 0 0 4 5.5v5a.5.5 0 0 0 .79.407L7.5 8.972V10.5a.5.5 0 0 0 .79.407L11 8.972V10.5a.5.5 0 0 0 1 0v-5a.5.5 0 0 0-1 0v1.528L8.29 5.093a.5.5 0 0 0-.79.407v1.528z"/>
+                            </svg>
+                        </div>
                     </div>
                     <div class="col-2">
                     </div>

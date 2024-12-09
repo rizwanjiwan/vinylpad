@@ -80,10 +80,12 @@ const vinylPadApp = Vue.createApp({
         play(){
             this.log('play called');
             this.music.play();
+            this.playState=PLAY_STATE_PLAYING;
         },
         pause(){
             this.log('pause called');
             this.music.pause();
+            this.playState=PLAY_STATE_PAUSED;
         },
         previousTrack(){
             this.log('previousTrack called');
@@ -92,6 +94,9 @@ const vinylPadApp = Vue.createApp({
         nextTrack(){
             this.log('nextTrack called');
             this.music.skipToNextItem();
+        },
+        showSearchForAlbum(){
+          this.state=STATE_LOAD_ALBUM;
         },
         //execute a search
         searchForAlbum() {
@@ -127,6 +132,7 @@ const vinylPadApp = Vue.createApp({
             //all our state stuff
             this.state=STATE_ALBUM_LOADED;
             this.playState=PLAY_STATE_PLAYING;
+            this.searchResults=this.searchResults.splice(0,this.searchResults.length); //clear out results
         },
         //following parse* methods pull out the specified data point from an element in searchResults
         parseAlbumId(resultRow){
