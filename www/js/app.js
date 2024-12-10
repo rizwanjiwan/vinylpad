@@ -78,6 +78,10 @@ const vinylPadApp = Vue.createApp({
                 this.state=STATE_NEED_AUTH;
             }
         },
+        logoutMusicKit(){
+            this.music.unauthorize();
+            window.location.reload();
+        },
         log(message){
             if(this.debug){
                 console.log(message);
@@ -150,6 +154,9 @@ const vinylPadApp = Vue.createApp({
             this.state=STATE_ALBUM_LOADED;
             this.playState=PLAY_STATE_PLAYING;
             this.searchResults=this.searchResults.splice(0,this.searchResults.length); //clear out results
+        },
+        backToPlay(){
+            this.state=STATE_ALBUM_LOADED;
         },
         //following parse* methods pull out the specified data point from an element in searchResults
         parseAlbumId(resultRow){

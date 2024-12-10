@@ -12,6 +12,9 @@
 .authorize-button{
     width:300px;
 }
+.logout-button{
+    width:100px;
+}
 .search-album-art{
     max-width:100px;
 }

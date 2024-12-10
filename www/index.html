@@ -31,9 +31,20 @@
 
         <div v-show="showPlayingScreen || showLoadAlbumScreen">
             <div v-show="showLoadAlbumScreen">
-                <h1 class="text-light">Select an album</h1>
+                <div class="row mb-3">
+                    <div class="col">
+                        <h1 class="text-light">Select an album</h1>
+                    </div>
+                    <div class="col align-self-end justify-content-end ">
+                        <img src="img/apple-music-logout.png" alt="logout" class="logout-button float-end" v-on:click="logoutMusicKit">
+                    </div>
+                </div>
+
+
                 <div class="row">
-                    <div class="col-2"></div>
+                    <div class="col-2">
+                        <p v-on:click="backToPlay" v-show="loadedAlbumDetails!==null" class="text-light clickable">⬅️ Back</p>
+                    </div>
                     <div class="col-8">
                         <input class="form-control form-control-lg"
                                type="text"
@@ -41,7 +52,8 @@
                                 v-model="searchQuery"
                                 v-on:keyup="searchForAlbum">
                     </div>
-                    <div class="col-2"></div>
+                    <div class="col-2 px-3">
+                    </div>
                 </div><!--end search field row-->
                 <!--start spinner for loading search results-->
                 <div class="d-flex justify-content-center" v-show="loadingSearchResults"><!--spinner for search results loading-->
