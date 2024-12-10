@@ -1,4 +1,4 @@
-Personal project that's an attempt to replicate a some what vinyl like experience on an iPad.
+Personal project that's an attempt to replicate a somewhat vinyl like experience on an iPad.
 
 You can play to airplay or bluetooth.
 
