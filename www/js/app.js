@@ -228,6 +228,9 @@ const vinylPadApp = Vue.createApp({
             this.library.push(this.loadedAlbumDetails);
             this.sortLibrary();
             this.saveLibrary();
+            if(this.searchLibrary){
+                this.searchForAlbum();  //just update results in the background
+            }
         },
         removeFromLibrary(){ //remove the currently playing item from the library
             //find
@@ -238,6 +241,9 @@ const vinylPadApp = Vue.createApp({
                 this.library.splice(index,1);//remove
                 this.saveLibrary();//don't need to sort, already sorted
             }
+            if(this.searchLibrary){
+                this.searchForAlbum();  //just update results in the background
+            }
         },
         saveLibrary(){
             localStorage.setItem(LIBRARY_STORAGE_KEY, JSON.stringify(this.library));//save
@@ -247,6 +253,44 @@ const vinylPadApp = Vue.createApp({
                 return this.parseAlbumName(a).localeCompare(this.parseAlbumName(b));
             })
         },
+        downloadLibrary(){
+            const link = document.createElement("a");
+            const file = new Blob([JSON.stringify(this.library)], { type: 'text/plain' });
+            link.href = URL.createObjectURL(file);
+            link.download = "vinylPad-library-"+this.getDate();
+            link.click();
+            URL.revokeObjectURL(link.href);
+        },
+        loadLibrary(){
+            let input = document.createElement('input');
+            input.type = 'file';
+            input.onchange = _ => {
+                let files =   Array.from(input.files);
+                files[0].text().then((val)=>{   //get the text from the first file
+                    const obj = JSON.parse(val);    //parse json obj from saved file
+                    this.library.splice(0, this.library.length);  //empty existing array of rows
+                    obj.forEach((el)=>{
+                        this.library.push(el);//add in elements
+                    });
+                    //make sure it's sorted and saved
+                    this.sortLibrary();
+                    this.saveLibrary();
+                    if(this.searchLibrary){
+                        this.searchForAlbum();  //just update results in the background
+                    }
+                    //bob's your uncle
+                })
+            };
+            input.click();//fake click
+        },
+        getDate(){
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            const yyyy = today.getFullYear();
+
+            return yyyy+"-"+mm+"-"+dd;
+        }
     },
     computed: {
         //all the high level screens to show/hide
