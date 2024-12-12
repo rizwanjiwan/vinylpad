@@ -226,6 +226,7 @@ const vinylPadApp = Vue.createApp({
         },
         addToLibrary(){ //add the currently playing item to the library
             this.library.push(this.loadedAlbumDetails);
+            this.sortLibrary();
             this.saveLibrary();
         },
         removeFromLibrary(){ //remove the currently playing item from the library
@@ -235,11 +236,16 @@ const vinylPadApp = Vue.createApp({
             })
             if(index>-1){
                 this.library.splice(index,1);//remove
-                this.saveLibrary();
+                this.saveLibrary();//don't need to sort, already sorted
             }
         },
         saveLibrary(){
             localStorage.setItem(LIBRARY_STORAGE_KEY, JSON.stringify(this.library));//save
+        },
+        sortLibrary(){  //sort by album name because reasons
+            this.library.sort((a,b)=>{
+                return this.parseAlbumName(a).localeCompare(this.parseAlbumName(b));
+            })
         },
     },
     computed: {
