@@ -11,6 +11,9 @@ const PLAY_STATE_PAUSED='paused';
 //the delay we want to use for search timer
 const SEARCH_TIMER_DELAY=250
 
+//key where we store our library
+const LIBRARY_STORAGE_KEY='my-library';
+
 const vinylPadApp = Vue.createApp({
     data() {
         let returnObj = {
@@ -20,11 +23,17 @@ const vinylPadApp = Vue.createApp({
             searchQuery:"",     //what the user is typing
             delaySearchTimer:undefined,  //the search timer to delay searching for each keypress
             searchResults:[],   //the results of the search
+            library:[],         //our local library of albums we've added as favs
+            searchLibrary:false,    //true to search our library. False=search apple music
             loadingSearchResults:false, //true when we're loading search results
             state:STATE_LOADING,    //the state to dictate which screen to show. See computes
             playState: PLAY_STATE_PAUSED,    //the play-pause state. See computes
             loadedAlbumDetails:null,    //the currently playing album details from search results (e.g. artist, name, album art)
         };
+        const libraryString=localStorage.getItem(LIBRARY_STORAGE_KEY);
+        if(libraryString!==null){
+            returnObj.library=JSON.parse(libraryString);    //load up hte library
+        }
         //console.log('Waiting for music Kit load.');
         //load music kit
         if(MusicKit ===undefined){
@@ -125,24 +134,45 @@ const vinylPadApp = Vue.createApp({
             clearTimeout(this.delaySearchTimer);
             this.searchResults.splice(0,this.searchResults.length); //clear out results
             this.loadingSearchResults=true;
-            this.delaySearchTimer=setTimeout(async ()=>{
-                    this.log("search: "+this.searchQuery);
-                    if(this.searchQuery.length===0)
-                    {
-                        this.loadingSearchResults=false;
-                        return;
+            if(this.searchLibrary){
+                //search our faves library
+                //match each album
+                this.library.forEach((album)=>{
+                    if( this.searchQuery.length===0 ||
+                        this.parseAlbumName(album).toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                        this.parseArtistName(album).toLowerCase().includes(this.searchQuery.toLowerCase())){
+
+                            this.searchResults.push(album);
                     }
-                    const result = await this.music.api.music(
-                        '/v1/catalog/'+this.music.storefrontId+'/search',
-                        { term: this.searchQuery, types: ['albums', 'artists'], limit: 10}
-                    );
-                    this.log(result.data.results.albums.data);
-                    result.data.results.albums.data.forEach((obj)=>{
-                        this.searchResults.push(obj);
-                    });
+                })
+                this.loadingSearchResults=false;
+            }
+            else{
+                //search apple music
+                if(this.searchQuery.length===0 ){   //nothing to search for
                     this.loadingSearchResults=false;
+                    return;
                 }
-                ,SEARCH_TIMER_DELAY)
+                this.delaySearchTimer=setTimeout(async ()=>{
+                        this.log("search: "+this.searchQuery);
+                        if(this.searchQuery.length===0)
+                        {
+                            this.loadingSearchResults=false;
+                            return;
+                        }
+                        const result = await this.music.api.music(
+                            '/v1/catalog/'+this.music.storefrontId+'/search',
+                            { term: this.searchQuery, types: ['albums', 'artists'], limit: 10}
+                        );
+                        this.log(result.data.results.albums.data);
+                        result.data.results.albums.data.forEach((obj)=>{
+                            this.searchResults.push(obj);
+                        });
+                        this.loadingSearchResults=false;
+                    }
+                    ,SEARCH_TIMER_DELAY)
+            }
+
         },
         //load an album from a searchResult index
         loadAlbum(index){
@@ -190,6 +220,27 @@ const vinylPadApp = Vue.createApp({
             rawUrl = rawUrl.replace('{h}',150);
             return rawUrl;
         },
+        toggleSearchLibrary(){
+          this.searchLibrary=!this.searchLibrary;
+          this.searchForAlbum();
+        },
+        addToLibrary(){ //add the currently playing item to the library
+            this.library.push(this.loadedAlbumDetails);
+            this.saveLibrary();
+        },
+        removeFromLibrary(){ //remove the currently playing item from the library
+            //find
+            const index=this.library.findIndex((item)=>{
+                return this.parseAlbumId(item)===this.parseAlbumId(this.loadedAlbumDetails);
+            })
+            if(index>-1){
+                this.library.splice(index,1);//remove
+                this.saveLibrary();
+            }
+        },
+        saveLibrary(){
+            localStorage.setItem(LIBRARY_STORAGE_KEY, JSON.stringify(this.library));//save
+        },
     },
     computed: {
         //all the high level screens to show/hide
@@ -207,6 +258,14 @@ const vinylPadApp = Vue.createApp({
         },
         isPlaying(){
             return this.playState===PLAY_STATE_PLAYING;
+        },
+        isPlayingInFavouries(){
+           return this.library.reduce((acc, cur,)=>{
+                       if(this.parseAlbumId(this.loadedAlbumDetails)===this.parseAlbumId(cur)){
+                           return true;
+                       }
+                       return acc;
+                   },false) ;
         }
     },//end computed
 
