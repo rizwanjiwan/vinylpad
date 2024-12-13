@@ -257,7 +257,8 @@ const vinylPadApp = Vue.createApp({
             const link = document.createElement("a");
             const file = new Blob([JSON.stringify(this.library)], { type: 'text/plain' });
             link.href = URL.createObjectURL(file);
-            link.download = "vinylPad-library-"+this.getDate();
+            link.download = "vinylPad-library-"+this.getDate()+".json";
+            document.body.appendChild(link);
             link.click();
             URL.revokeObjectURL(link.href);
         },
