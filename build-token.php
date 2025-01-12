@@ -19,7 +19,7 @@ try{
     $token=$builder->build();
     //echo $token;
     //echo TokenBuilder::parse($token);
-    file_put_contents('www/token.json', $token);
+    file_put_contents(realpath(dirname(__FILE__)).'/www/token.json', $token);
 }
 catch(Exception $e){
     echo $e->getMessage();
